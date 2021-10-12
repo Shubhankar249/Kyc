@@ -26,7 +26,11 @@
     <script src="script.js" defer></script>
 </head>
 <body>
-    <div id="video-grid"></div>
-
+    <div id="video-grid"></div> <hr />
+    <div id = "calling-div"></div>
+    <form action="/file-upload" enctype="multipart/form-data" method="post">
+        <input type="file" name="document">
+        <input type="submit" value="Upload">
+    </form>
 </body>
 </html>

@@ -19,7 +19,7 @@ navigator.mediaDevices.getUserMedia({audio: true, video: { facingMode: "user" } 
         addVideoStream(myVideo, stream);
 
         socket.on('user-connected', userId => {  // A new user has joined the room
-            connectToNewUser(userId, stream);
+            document.getElementById('calling-div').innerHTML = `<button onclick = "connectToNewUser(${userId}, ${stream})"> Call Agent</button>`;
         });
 
         myPeer.on('call', call => {
@@ -63,5 +63,6 @@ function connectToNewUser(userId, stream) {
 
 socket.on('user-disconnected', userId => {
     alert("User - " + userId + " disconnected");
+    document.getElementById('calling-div').innerHTML = "";
     userCall.close();
 })
