@@ -1,23 +1,27 @@
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+    cors: {origin: "http://localhost:3000", methods: ["GET", "POST"]}
+});
 const {v4 : uuidV4} = require('uuid');  // Using method v4 as uuidV4
 const multer = require('multer');
+const cors = require('cors');
 
-app.set('view engine','ejs');
-app.use(express.static('public'));
+app.use(cors());
+// app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
 app.get('/', (req, res) => {
-    res.redirect(`/${uuidV4()}`);
+    console.log("Server reached");
+    res.json({msg: "hello world"});
 });
 
-app.get('/:roomId', (req, res) => {
-    res.render('room', {roomId: req.params.roomId});
-});
+// app.get('/:roomId', (req, res) => {
+//     // res.render('room', {roomId: req.params.roomId});
+// });
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -30,18 +34,31 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // let files = [];
-app.post('/file-upload', upload.single('document'), (req, res) => {
-    res.download('uploads/' + req.file.filename, 'server-file.txt');
+app.post('/file-upload', upload.single('file'), (req, res) => {
+    res.json({filename: req.file.path});
+    // res.download('uploads/' + req.file.filename, 'server-file.txt');
 });
+
+app.get('/download', (req, res) => {
+    console.log("query path", req.query.path);
+    res.download(req.query.path, 'user-file.txt');
+})
 
 io.on('connection', socket => {
    socket.on('join-room', (roomId, userId) => {
        socket.join(roomId);
        socket.broadcast.to(roomId).emit('user-connected', userId);
+       console.log("Server pe user aya h", userId);
+
+       socket.on('file-uploaded', filename => {
+           console.log("File uploaded called", filename);
+           socket.broadcast.to(roomId).emit('file-received', filename);
+       });
 
        socket.on('disconnect', () => {  // called when someone leaves the room
+           // console.log("server se user disconected", userId);
            socket.broadcast.to(roomId).emit('user-disconnected', userId);
-       })
+       });
    });
 });
 server.listen(4200);

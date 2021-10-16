@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../automatedKyc/.idea/automatedKyc.iml" filepath="$PROJECT_DIR$/../automatedKyc/.idea/automatedKyc.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/kyc.iml" filepath="$PROJECT_DIR$/.idea/kyc.iml" />
     </modules>
   </component>
